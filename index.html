@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025 FORTUNE TELLER</title>
+    <style>
+        body { margin: 0; background: #111; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        
+        #slot-machine {
+            border: 10px solid gold; border-radius: 20px; background: #222;
+            padding: 40px; text-align: center; box-shadow: 0 0 50px gold;
+            transition: all 0.5s; position: relative; z-index: 10;
+        }
+
+        .screen {
+            background: black; font-size: 80px; padding: 20px;
+            margin: 20px 0; border: 5px inset #444; min-width: 300px; height: 120px;
+        }
+
+        button {
+            background: linear-gradient(to bottom, #ff0, #cc0); border: none;
+            padding: 20px 40px; font-size: 20px; font-weight: bold;
+            cursor: pointer; border-radius: 50px; box-shadow: 0 5px 0 #990;
+        }
+
+        button:active { transform: translateY(5px); box-shadow: none; }
+
+        /* Neon Text for the reveal */
+        .neon-reveal {
+            display: none; font-size: 5vw; color: #fff;
+            text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 40px #0ff;
+            animation: vibrate 0.1s infinite;
+        }
+
+        @keyframes vibrate {
+            0% { transform: translate(0); }
+            50% { transform: translate(5px, -5px); }
+            100% { transform: translate(-5px, 5px); }
+        }
+
+        .heart { font-size: 150px; display: none; color: red; text-shadow: 0 0 30px red; }
+
+        /* Full screen banana rain */
+        .falling-banana {
+            position: fixed; font-size: 40px; z-index: 1; pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="slot-machine">
+        <h2 id="header">2025 LUCK GENERATOR</h2>
+        <div class="screen" id="reel">❓</div>
+        <button id="spin-btn">SPIN FOR DESTINY</button>
+    </div>
+
+    <div id="final-zone" style="display:none; text-align:center; z-index:100;">
+        <h1 class="neon-reveal" id="laude-text">HAPPY NEW YEAR LAUDE</h1>
+        <div class="heart" id="heart">❤️</div>
+    </div>
+
+    <script>
+        const spinBtn = document.getElementById('spin-btn');
+        const reel = document.getElementById('reel');
+        const slot = document.getElementById('slot-machine');
+        const finalZone = document.getElementById('final-zone');
+        const laudeText = document.getElementById('laude-text');
+        const heart = document.getElementById('heart');
+
+        function playScream() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'square'; // Very annoying buzz
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            
+            // Continuous frequency modulation (Siren/Scream)
+            setInterval(() => {
+                osc.frequency.setValueAtTime(Math.random() * 1000 + 200, ctx.currentTime);
+            }, 50);
+        }
+
+        spinBtn.addEventListener('click', () => {
+            spinBtn.style.display = 'none';
+            let speed = 50;
+            let symbols = ['🍌', '🍒', '💎', '7️⃣', '🍌', '🤡'];
+            
+            // Spinning Animation
+            let spinInterval = setInterval(() => {
+                reel.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                slot.style.transform = `rotate(${Math.random() * 4 - 2}deg) scale(${1 + (speed/500)})`;
+            }, 50);
+
+            // The "Breakdown" after 3 seconds
+            setTimeout(() => {
+                clearInterval(spinInterval);
+                playScream();
+                reel.innerText = '🍌';
+                reel.style.color = 'yellow';
+                
+                // Melt the slot machine
+                slot.style.transition = '2s';
+                slot.style.transform = 'translateY(1000px) rotate(45deg)';
+                slot.style.opacity = '0';
+
+                // Reveal the funny message
+                setTimeout(() => {
+                    slot.style.display = 'none';
+                    finalZone.style.display = 'block';
+                    laudeText.style.display = 'block';
+                    
+                    // Rain Bananas
+                    setInterval(spawnBanana, 100);
+
+                    // Show heart after 3 seconds of chaos
+                    setTimeout(() => {
+                        heart.style.display = 'block';
+                    }, 3000);
+                }, 500);
+            }, 3000);
+        });
+
+        function spawnBanana() {
+            const b = document.createElement('div');
+            b.className = 'falling-banana';
+            b.innerText = '🍌';
+            b.style.left = Math.random() * 100 + 'vw';
+            b.style.top = '-50px';
+            document.body.appendChild(b);
+            
+            let pos = -50;
+            let fall = setInterval(() => {
+                pos += 10;
+                b.style.top = pos + 'px';
+                b.style.transform = `rotate(${pos}deg)`;
+                if(pos > window.innerHeight) {
+                    clearInterval(fall);
+                    b.remove();
+                }
+            }, 20);
+        }
+    </script>
+</body>
+</html>
